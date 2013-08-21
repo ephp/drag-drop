@@ -1,0 +1,24 @@
+{
+    "name": "ephp/dragdrop",
+    "type": "symfony-bundle",
+    "description": "Bozza di drag drop per Symfony",
+    "keywords": ["dran drop", "symfony", "symfony bundle", "bundle", "ephp", "symfony-2.3"],
+    "homepage": "https://github.com/ephp/drag-drop",
+    "license": "MIT",
+    "authors": [
+            {
+                "name": "Ephraim Pepe",
+                "email": "ephraim.pepe@gmail.com"
+            }
+    ],
+    "require": {
+            "php": ">=5.4",
+            "symfony/framework-bundle": "2.*",
+            "ephp/utility": "master"
+    },
+    "autoload": {
+            "psr-0": { "Ephp\\DragDropBundle": "" }
+    },
+    "target-dir": "Ephp/DragDropBundle",
+    "minimum-stability": "dev"
+}

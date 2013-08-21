@@ -1,0 +1,56 @@
+@charset 'UTF-8';
+/*
+ * jQuery File Upload UI Plugin CSS 6.0
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  height: 26px;
+  width: 232px;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -moz-transform: translate(-300px, 0) scale(4);
+  direction: ltr;
+  cursor: pointer;
+}
+
+.fileinput-button {
+  position: relative;
+  /*overflow: hidden;*/
+  float: left;
+  margin-right: 4px;
+}
+
+.fileinput-button span {
+  display: block;
+}
+
+.progressbar,
+.progressbar div {
+  width: 200px;
+  height: 20px;
+  padding: 1px;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+.progressbar div {
+  width: auto;
+  height: 20px;
+  padding: 0;
+  background: url(progressbar.gif);
+  -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+          border-radius: 2px;
+}
