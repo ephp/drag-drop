@@ -15,7 +15,7 @@
             "php": ">=5.4",
             "symfony/framework-bundle": "2.*",
             "ephp/utility": "master",
-            "punkave/symfony2-file-uploader-bundle":"dev-master",
+            "punkave/symfony2-file-uploader-bundle":"dev-master"
     },
     "autoload": {
             "psr-0": { "Ephp\\DragDropBundle": "" }
