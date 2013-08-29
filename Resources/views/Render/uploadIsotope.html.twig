@@ -1,0 +1,58 @@
+{% javascripts
+    '@EphpUtilityBundle/Resources/public/js/environment.js'
+    '@EphpDragDropBundle/Resources/public/js/jquery.isotope.js'
+    '@EphpDragDropBundle/Resources/public/js/my-isotope.js'
+    '@EphpDragDropBundle/Resources/public/js/underscore-min.js'
+    '@PunkAveFileUploaderBundle/Resources/public/js/jquery.fileupload.js'
+    '@PunkAveFileUploaderBundle/Resources/public/js/FileUploader.js'
+%}
+<script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+
+{% include "PunkAveFileUploaderBundle:Default:templates_isotope.html.twig" %}
+
+<div id="contenitore_foto_upload" style="position: absolute; z-index: 500; top: 60px; left: 290px;">
+    {% if form %}
+        <form class="edit-form" action="#" method="post" onsubmit="return false">
+    {% endif %}
+        {# creo Cartella random per ogni utente, richiesta dal bundle #}
+        <input type="hidden" id="id_cartella_upload" name="id_cartella_upload" value="{{id_cartella_upload}}">
+        {# redirect dove voglio #}
+        <div class="file-uploader"></div>
+        <div id="upload_foto">
+            {# 
+                Qui appare il pulsante, lo faccio apparire via Js, per pararsi un pò il culo 
+            #}
+        </div>
+    {% if form %}
+        </form>
+    {% endif %}
+</div>
+
+<script type="text/javascript">
+    // Enable the file uploader
+    var id_cartella_upload = '{{id_cartella_upload}}';
+    $(function() {
+        new PunkAveFileUploader({
+            'uploadUrl':{{ path('drag_drop_save', { editId: id_cartella_upload }) | json_encode | raw }},
+            'viewUrl': "{{ '/uploads/files/' ~ id_cartella_upload | json_encode | raw }}",
+            'el': '.file-uploader', //BOTTONE PER UPLOAD FILE
+            'delaySubmitWhileUploading': '.edit-form',
+            'errorCallback': function(errorObj) {
+                if (errorObj.error == 'maxNumberOfFiles') {
+                    alert("{{'form_upload_foto.error.massimo_numero_files'|trans({},'SNFotoBundle') }}");
+                }
+                if (errorObj.error == 'acceptFileTypes') {
+                    creaMessaggioFlash('#contenitore_foto_upload','<p id="error_load_foto">{{'form_upload_foto.error.tipo_file_accettati'|trans({},'SNFotoBundle') }}</p>', 1000,3000,1000);
+                }
+                if (errorObj.error == 'maxFileSize') {
+                    var dimensione = '{{dimensione_massima_immagine}}'.first(); //Prendo la prima lettera/numero Translator.get('DOMAIN_NAME:key', { "foo" : "bar" });
+                    creaMessaggioFlash('#contenitore_foto_upload','<p id="error_load_foto">'+Translator.get('SNFotoBundle:form_upload_foto.error.massima_dimensione', { "dimensione" : dimensione })+'</p>', 1000,3000,1000);
+                }
+                if (errorObj.error == 'minResolution') {
+                    creaMessaggioFlash('#contenitore_foto_upload','<p id="error_load_foto">{{'form_upload_foto.error.minima_risoluzione'|trans({'%larghezza_minima_immagine%':larghezza_minima_immagine,'%altezza_minima_immagine%':altezza_minima_immagine},'SNFotoBundle') }}</p>', 1000,3000,1000);
+                }
+            }
+        });
+    });
+</script>

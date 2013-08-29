@@ -1,0 +1,124 @@
+{# Contains Underscore templates for the file uploader. #}
+{# As long as the data-* attributes stay on the appropriate elements #}
+{# you can override the markup pretty extensively in a local version #}
+{# of this file. #}
+
+{# Include this file once in the page. You can instantiate many file uploaders. #}
+{# Each one must receive a distinct uploadUrl option. You can also pass #}
+{# an existingFiles option with a list of filenames that should appear in the #}
+{# editor as having been previously uploaded. #}
+
+{# "Why is this a Twig file?" Twig allows for a mix of comments not seen in the browser #}
+{# and Underscore templates. It's easy to include in a Symfony template. #}
+
+<script type="text/template" id="file-uploader-template">
+    <div class="uploader">
+        <div class="controls">
+            {# No name attribute please, that would cause it to submit with a regular form #}
+            <input type="file" data-files="1" multiple class="file" style="margin:0;padding:0">
+        <div class="fakefile">
+        <button type="button" class="smaller">{{'form_upload_foto.label_button'|trans({},'SNFotoBundle') }}</button>
+        </div>
+        <span class="spinner spinner-alt" data-spinner="1" style="display: none;">
+            <img src="{{ asset('bundles/punkavefileuploader/images/spinner.gif') }}" />
+        </span>
+        </div>
+        <div  data-thumbnails="1">
+            {# We populate the list via an API call #}
+        </div>
+    </div>
+</script>
+{#<div id="button">
+click me
+</div>
+<div id="button2">
+shuffle me
+</div>#}
+{# parameters to underscore template: name, thumbnail_url, original_url #}
+<div id="iso-content">
+    <div id="iso-container">
+        <div id="drop_zone" class="photo-edit-area element" data-dropzone="1">
+            <div class="photo-edit">
+            </div>
+        </div>
+        <script type="text/template" id="file-uploader-file-template">
+            <div data-name="<%- name %>" class="photo-edit-area element">
+                {# Some things can be thumbnailed, some things not #}
+                {# ACHTUNG: regular expression literals fail in Underscore templates #}
+                <% if (url.match(new RegExp('(\.gif|\.jpg|\.jpeg|\.png)$', 'i'))) { %>
+
+                    <div class="photo-edit" id="pre_jcrop_image-<%- numero_foto %>">
+                        <img src="<%- small_url %>" />
+                    </div>
+
+                    {% if jcrop is defined and jcrop == true%}
+                        <section id="edit_image-<%- numero_foto %>"  style="display: none; overflow: hidden">
+                            
+                            {# FANCY BOX JCROP #}
+                            <div id="jcrop_image-<%- numero_foto %>">
+                                <div id="preview-pane-<%- numero_foto %>" class="preview-pane" style="display: none;">
+                                    <div class="preview-container" style="width: 200px;height: 200px;overflow: hidden;">
+                                      <img src="<%- medium_url %>" class="jcrop-preview" alt="Preview" />
+                                    </div>
+                                </div>
+                                <img src="<%- medium_url %>" class="original-image" id="crop_foto-<%- numero_foto %>"/>
+                                <form id="jcrop_foto-<%- numero_foto %>" class="coords" action="{{path('croppa_foto')}}" method="post" onsubmit="return false"> {#qui c'era un cotnrollo dimensioni minimi utile, ma ora puppa#}
+                                    <input type="hidden" id="immagine_originale" name="immagine_originale" value="<%- medium_url %>"/>
+                                    <input type="hidden" id="name_originale" name="name_originale" value="<%- name %>"/>
+                                    <div id="coordinate_jcrop-<%- numero_foto %>" class="coordinate_jcrop"></div>
+                                    <input type="hidden" id="percorso" name="percorso" value="{{id_cartella_upload}}"/> {# nome univoco della cartella creato in tmp#}
+                                    <button type="submit" value="Crop Image" id="btn_crop-<%- numero_foto %>" onclick="jcrop_ajax($(this))" class="small"  style="display:none;position: absolute; bottom: 10px; left: 10px; z-index: 8999">{{'form_gestione_foto.form.crop'|trans({},'SNFotoBundle') }}</button>
+                                </form>
+                            </div>
+                    
+                            {# BALOON MODIFICA#}
+                            <form  method="post" action="{{path('salva_descrizione_foto_nuova')}}" id="form_carica_foto-<%- numero_foto %>" class="form_gestione_foto" style="clear: both;"> 
+                                <input type="hidden" id="name_originale" name="name_originale" value="<%- name %>"/>
+                                <div class="edit-area editarea-<%- numero_foto %> form-default form-edit-image" style="display: none;">
+                                    <a href="javascript: void(0);" class="open-close-editarea open-close-editarea-<%- numero_foto %>">aperto</a>                                
+                                    <div class="form-section">
+                                        <div class="section">
+                                            <div class="form-section-area">
+                                                <span style="padding: 4px;"><label for="titolo_foto">{{'form_gestione_foto.form.fotoProfilo'|trans({},'SNFotoBundle') }}</label></span>
+                                                <input type="text" class="titolo_foto small" name="titolo_foto" maxlength="50">
+                                            </div>
+                                            <div class="form-section-area">
+                                                <span style="padding: 4px;"><label for="descrizione_foto">{{'form_gestione_foto.form.fotoProfilo'|trans({},'SNFotoBundle') }}</label></span>
+                                                <textarea rows="5" class="descrizione_foto small" name="descrizione_foto"></textarea>
+                                            </div>
+                                        </div>
+                                        <div style="float: left;">
+                                            <div class="form-section-area" >
+                                                <label for="foto_privata">{{'form_gestione_foto.form.fotoPrivata'|trans({},'SNFotoBundle') }}</label>
+                                                <input type="checkbox" id="foto_privata-<%- numero_foto %>" class="foto_privata" name="foto_privata">
+                                            </div>
+                                            <div class="form-section-area">
+                                                <label for="foto_profilo-<%- numero_foto %>">{{'form_gestione_foto.form.fotoProfilo'|trans({},'SNFotoBundle') }}</label>
+                                                <input type="checkbox" onclick="mostra_opzioni_modifica($(this))" id="foto_profilo-<%- numero_foto %>" class="foto_profilo"  name="foto_profilo">
+                                            </div>
+                                            <div class="form-section-area">
+                                                 <button type="submit" class="small">{{ 'salva'|trans({}, 'messages') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </section>
+                    {% endif %}
+
+                <% } %>
+
+                {# ICONE DI MODIFICA DELL'IMMAGINE #}
+                <div class="caption">
+                    <a href="#edit_image-<%- numero_foto %>" class="apri_scheda modify thumbnail-action" rel="gallery_gestione_foto" index="<%- numero_foto %>">modifica</a>
+                    {#<a targetLink="baloon-image-tools-<%- numero_foto %>" class="toggle-content-<%- numero_foto %> modify thumbnail-action" href="javascript:void(0)">modifica</a>
+                    <a rel="tooltip" title="Download Original" class="download thumbnail-action" target="download" href="<%- url %>">vedi</a>
+                    Cancella il file appena caricato, chiama un'azione Ajax dentro js/FileUploader.js#}
+                    <a id="btn_delete" data-action="delete" class="delete thumbnail-action small" href="#delete">{{'elimina'|trans({},'messages')|raw }}</a>
+                </div>
+            </div>
+
+        </script>
+    </div>
+</div>
